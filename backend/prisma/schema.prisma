@@ -1,0 +1,117 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  did       String   @unique
+  profile   Json?    // Store flexible profile data
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  datasetsOwned   Dataset[]      @relation("OwnedDatasets")
+  sharesGiven     DatasetShare[] @relation("SharesGiven")
+  sharesReceived  DatasetShare[] @relation("SharesReceived")
+  consentRecords  ConsentRecord[]
+  didDocuments    DIDDocument[]
+
+  @@map("users")
+}
+
+model Dataset {
+  id          String   @id @default(cuid())
+  did         String   @unique
+  title       String
+  description String?
+  fileHash    String   @unique
+  filePath    String
+  fileSize    Int
+  mimeType    String
+  metadata    Json     // Flexible metadata storage
+  aiTags      String[] // Array of AI-generated tags
+  isPublic    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  ownerId     String
+  owner       User           @relation("OwnedDatasets", fields: [ownerId], references: [id], onDelete: Cascade)
+  shares      DatasetShare[]
+
+  @@map("datasets")
+}
+
+model DatasetShare {
+  id           String   @id @default(cuid())
+  permission   String   // e.g., 'VIEW', 'EDIT'
+  sharedAt     DateTime @default(now())
+
+  // Relations
+  datasetId    String
+  dataset      Dataset  @relation(fields: [datasetId], references: [id], onDelete: Cascade)
+
+  sharedById   String
+  sharedBy     User     @relation("SharesGiven", fields: [sharedById], references: [id], onDelete: Cascade)
+
+  sharedWithId String
+  sharedWith   User     @relation("SharesReceived", fields: [sharedWithId], references: [id], onDelete: Cascade)
+
+  @@unique([datasetId, sharedWithId])
+  @@map("dataset_shares")
+}
+
+model DIDDocument {
+  id        String   @id @default(cuid())
+  did       String   @unique
+  document  Json     // W3C DID Document
+  version   Int      @default(1)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("did_documents")
+}
+
+model ConsentRecord {
+  id           String   @id @default(cuid())
+  consentType  String   // 'data_processing', 'marketing', etc.
+  isGranted    Boolean
+  ipAddress    String?
+  userAgent    String?
+  consentedAt  DateTime @default(now())
+  revokedAt    DateTime?
+
+  // Relations
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("consent_records")
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  action     String   // 'create', 'read', 'update', 'delete'
+  resource   String   // 'user', 'dataset', 'permission'
+  resourceId String
+  userId     String?
+  ipAddress  String?
+  userAgent  String?
+  details    Json?
+  timestamp  DateTime @default(now())
+
+  @@map("audit_logs")
+}
