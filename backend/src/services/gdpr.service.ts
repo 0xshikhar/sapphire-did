@@ -262,7 +262,7 @@ export class GDPRService {
         controller: 'Sapphire DID Project',
         contactEmail: 'privacy@sapphire-project.example.com',
         exportRequestedAt: new Date(),
-        dataRetentionPolicy: 'https://sapphire-project.example.com/privacy/retention',
+        dataRetentionPolicy: 'https://sapphire-project.example.com/#/retention',
       },
     };
   }

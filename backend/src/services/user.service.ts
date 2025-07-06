@@ -1,6 +1,6 @@
 import { db } from './database.service'
 import { DIDService } from './did.service'
-import { User } from '@prisma/client'
+import { User  } from '@prisma/client'
 
 /**
  * Service for user management

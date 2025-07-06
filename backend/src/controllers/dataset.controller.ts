@@ -24,19 +24,19 @@ const aiService = new AIService()
  * GET /datasets/my-datasets
  */
 datasetRouter.get('/my-datasets', authenticateUser, async (req: AuthenticatedRequest, res: Response) => {
-  try {
-    const userDid = req.user?.did;
-    if (!userDid) {
-      return res.status(400).json({ error: 'User DID not found in token' });
+    try {
+        const userDid = req.user?.did;
+        if (!userDid) {
+            return res.status(400).json({ error: 'User DID not found in token' });
+        }
+
+        const datasets = await datasetService.getDatasetsByDID(userDid);
+
+        res.status(200).json(datasets);
+    } catch (error) {
+        console.error('Get My Datasets Error:', error);
+        res.status(500).json({ error: 'Failed to get user datasets' });
     }
-
-    const datasets = await datasetService.getDatasetsByDID(userDid);
-
-    res.status(200).json(datasets);
-  } catch (error) {
-    console.error('Get My Datasets Error:', error);
-    res.status(500).json({ error: 'Failed to get user datasets' });
-  }
 });
 
 /**

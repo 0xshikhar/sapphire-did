@@ -1,7 +1,9 @@
 import * as tf from '@tensorflow/tfjs-node'
 import * as fs from 'fs'
 import * as path from 'path'
-import Papa, { ParseResult } from 'papaparse';
+import Papa, { ParseResult } from 'papaparse'
+import axios from 'axios'
+import { AI_CONFIG } from '../config/env.config'
 
 // Define mime type categories for classification
 type MimeCategory = 'image' | 'text' | 'document' | 'audio' | 'video' | 'dataset' | 'other'
@@ -36,16 +38,25 @@ export class AIService {
   private async loadModels(): Promise<void> {
     try {
       // Load models in background to avoid blocking startup
-      if (process.env.AI_MODELS_ENABLED === 'true') {
-        // Note: In a production environment, these would be proper model paths
-        // For MVP we use simple classification for demonstration
+      if (AI_CONFIG.modelsEnabled) {
         console.log('Initializing AI models...')
         
-        // For a real implementation, we would load actual models:
-        // this.imageModel = await tf.loadLayersModel('file://./models/image-classifier/model.json')
-        // this.textModel = await tf.loadLayersModel('file://./models/text-classifier/model.json')
+        // Try to load a basic image classification model
+        try {
+          // For demonstration, we'll use MobileNet which can be useful for basic image classification
+          // In production, you would use a custom-trained cultural heritage model
+          const modelPath = path.join(AI_CONFIG.modelPath, 'mobilenet/model.json');
+          if (fs.existsSync(modelPath)) {
+            this.imageModel = await tf.loadLayersModel(`file://${modelPath}`);
+            console.log('Image classification model loaded');
+          } else {
+            console.log('No image model found at', modelPath, '- using fallback classification');
+          }
+        } catch (modelError) {
+          console.warn('Could not load image model:', modelError instanceof Error ? modelError.message : String(modelError));
+        }
         
-        console.log('AI models initialized')
+        console.log('AI models initialization complete')
       } else {
         console.log('AI models disabled by configuration')
       }
@@ -167,15 +178,21 @@ export class AIService {
   }
 
   /**
-   * Extract key terms from text content
+   * Extract key terms from text content using OpenAI if available
    * @param text Text to analyze
    * @returns Array of extracted tags
    */
   private async extractTextTags(text: string): Promise<string[]> {
-    // In a production system, this would use NLP/TensorFlow
-    // For MVP, we'll use a simple keyword extraction approach
+    // Try OpenAI extraction first if API key is available
+    if (AI_CONFIG.openaiApiKey) {
+      try {
+        return await this.extractTagsWithOpenAI(text)
+      } catch (error) {
+        console.error('OpenAI text extraction failed, falling back to basic extraction:', error)
+      }
+    }
     
-    // Common cultural heritage terms to look for
+    // Fallback to basic keyword extraction
     const culturalTerms = [
       'historical', 'artifact', 'heritage', 'culture', 'archive', 
       'museum', 'collection', 'preservation', 'archaeology', 'anthropology',
@@ -202,28 +219,173 @@ export class AIService {
   }
 
   /**
-   * Classify image content
+   * Extract tags using OpenAI API
+   * @param text Text to analyze
+   * @returns Array of extracted tags
+   */
+  private async extractTagsWithOpenAI(text: string): Promise<string[]> {
+    const prompt = `Analyze the following text and extract relevant tags for cultural heritage categorization. Focus on identifying:
+- Historical periods or eras
+- Cultural themes
+- Geographic locations
+- Types of artifacts or documents
+- Research domains
+
+Return only a JSON array of 3-7 relevant tags, no explanations.
+
+Text: ${text.substring(0, 2000)}`
+
+    const response = await axios.post(
+      'https://api.openai.com/v1/chat/completions',
+      {
+        model: 'gpt-3.5-turbo',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are an expert in cultural heritage and digital humanities. Extract relevant tags from text content.'
+          },
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        max_tokens: 150,
+        temperature: 0.3
+      },
+      {
+        headers: {
+          'Authorization': `Bearer ${AI_CONFIG.openaiApiKey}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    )
+
+    try {
+      const content = response.data.choices[0].message.content
+      const tags = JSON.parse(content.trim())
+      return Array.isArray(tags) ? tags.slice(0, 7) : []
+    } catch (parseError) {
+      console.error('Failed to parse OpenAI response:', parseError)
+      return []
+    }
+  }
+
+  /**
+   * Classify image content using TensorFlow.js if available
    * @param imageBuffer Image data
    * @returns Array of image tags
    */
   private async classifyImage(imageBuffer: Buffer): Promise<string[]> {
-    // For MVP, return placeholder tags
-    // In production, this would use the TensorFlow model
+    if (this.imageModel) {
+      try {
+        // Try TensorFlow classification
+        return await this.classifyImageWithTensorFlow(imageBuffer);
+      } catch (error) {
+        console.error('TensorFlow image classification failed:', error);
+      }
+    }
     
-    // This is where we would process the image with TensorFlow:
-    // 1. Decode the image
-    // 2. Preprocess it for the model
-    // 3. Run inference
-    // 4. Process the results
+    // Fallback to heuristic-based classification
+    return this.classifyImageHeuristic(imageBuffer);
+  }
+
+  /**
+   * Classify image using TensorFlow.js model
+   * @param imageBuffer Image data
+   * @returns Array of image tags
+   */
+  private async classifyImageWithTensorFlow(imageBuffer: Buffer): Promise<string[]> {
+    // Decode image from buffer
+    const tensor = tf.node.decodeImage(imageBuffer, 3);
     
-    // For now, return random cultural heritage image tags
+    // Resize to model input size (typically 224x224 for MobileNet)
+    const resized = tf.image.resizeBilinear(tensor, [224, 224]);
+    
+    // Normalize pixel values to [0, 1]
+    const normalized = resized.div(255.0);
+    
+    // Add batch dimension
+    const batched = normalized.expandDims(0);
+    
+    // Run inference
+    const predictions = this.imageModel.predict(batched) as tf.Tensor;
+    const scores = await predictions.data();
+    
+    // Clean up tensors
+    tensor.dispose();
+    resized.dispose();
+    normalized.dispose();
+    batched.dispose();
+    predictions.dispose();
+    
+    // Convert model predictions to cultural heritage tags
+    return this.interpretImagePredictions(Array.from(scores));
+  }
+
+  /**
+   * Interpret model predictions for cultural heritage context
+   * @param predictions Model output scores
+   * @returns Array of cultural heritage tags
+   */
+  private interpretImagePredictions(predictions: number[]): string[] {
+    // This is a simplified mapping - in production you'd have a custom model
+    // trained specifically for cultural heritage content
+    const tags: string[] = [];
+    
+    // Map generic predictions to cultural heritage categories
+    const maxIndex = predictions.indexOf(Math.max(...predictions));
+    const maxScore = predictions[maxIndex];
+    
+    if (maxScore > 0.3) {
+      // High confidence predictions
+      const mappings = [
+        'historical_object', 'cultural_artifact', 'artwork', 'document',
+        'architectural_element', 'ceremonial_object', 'tool', 'textile',
+        'sculpture', 'painting', 'manuscript', 'photograph'
+      ];
+      
+      tags.push(mappings[maxIndex % mappings.length]);
+    }
+    
+    // Add general cultural heritage tags based on confidence
+    if (maxScore > 0.5) {
+      tags.push('museum_quality');
+    }
+    if (maxScore > 0.7) {
+      tags.push('significant_artifact');
+    }
+    
+    return tags.length > 0 ? tags : ['cultural_item'];
+  }
+
+  /**
+   * Heuristic-based image classification fallback
+   * @param imageBuffer Image data
+   * @returns Array of image tags
+   */
+  private classifyImageHeuristic(imageBuffer: Buffer): string[] {
+    // Analyze image properties without deep learning
     const possibleTags = [
       'artifact', 'document', 'photograph', 'artwork',
       'portrait', 'landscape', 'building', 'object',
       'historical_site', 'map', 'illustration'
-    ]
+    ];
     
-    return this.getRandomElements(possibleTags, 3)
+    // Basic file size heuristics
+    const tags = [];
+    const sizeKB = imageBuffer.length / 1024;
+    
+    if (sizeKB > 500) {
+      tags.push('high_resolution');
+    }
+    if (sizeKB < 50) {
+      tags.push('thumbnail');
+    }
+    
+    // Add random cultural heritage tags for demonstration
+    tags.push(...this.getRandomElements(possibleTags, 3));
+    
+    return tags;
   }
 
   /**
@@ -324,6 +486,66 @@ export class AIService {
     return 'string'
   }
   
+  /**
+   * Generate enhanced description using OpenAI
+   * @param title Dataset title
+   * @param description Original description
+   * @param tags Extracted tags
+   * @returns Enhanced description
+   */
+  async generateEnhancedDescription(title: string, description: string, tags: string[]): Promise<string> {
+    if (!AI_CONFIG.openaiApiKey) {
+      return description + '\n\nThis cultural heritage dataset contains valuable information that contributes to our understanding of historical and cultural contexts.'
+    }
+
+    try {
+      const prompt = `Given this cultural heritage dataset information, write an enhanced description that provides academic and cultural context:
+
+Title: ${title}
+Original Description: ${description}
+Tags: ${tags.join(', ')}
+
+Create a 2-3 sentence enhanced description that:
+- Explains the cultural/historical significance
+- Identifies potential research applications
+- Maintains academic tone
+- Adds value beyond the original description
+
+Return only the enhanced description, no additional formatting.`
+
+      const response = await axios.post(
+        'https://api.openai.com/v1/chat/completions',
+        {
+          model: 'gpt-3.5-turbo',
+          messages: [
+            {
+              role: 'system',
+              content: 'You are a cultural heritage expert writing academic descriptions for research datasets.'
+            },
+            {
+              role: 'user',
+              content: prompt
+            }
+          ],
+          max_tokens: 200,
+          temperature: 0.4
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${AI_CONFIG.openaiApiKey}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      )
+
+      const enhancedDescription = response.data.choices[0].message.content.trim()
+      return description + '\n\n' + enhancedDescription
+    } catch (error) {
+      console.error('Failed to generate enhanced description with OpenAI:', error)
+      return description + '\n\nThis cultural heritage dataset provides valuable insights into historical and cultural contexts.'
+    }
+  }
+
   /**
    * Get potential cultural heritage categories for a dataset
    * @param tags Existing tags
