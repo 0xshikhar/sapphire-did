@@ -35,7 +35,7 @@ export default function DashboardLayout({
         <aside className="hidden pt-5 w-[200px] flex-col md:flex">
           <DashboardNav items={dashboardConfig.sidebarNav} />
         </aside>
-        <main className="flex w-full flex-1 flex-col overflow-hidden">
+        <main className="flex w-full flex-1 flex-col overflow-hidden pt-5">
           {children}
         </main>
       </div>

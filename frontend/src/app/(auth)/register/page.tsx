@@ -5,6 +5,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { usePrivy, useWallets } from "@privy-io/react-auth"
+import Image from "next/image"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -95,19 +96,55 @@ export default function RegisterPage() {
 
     return (
         <div className="container relative flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0">
-            <div className="relative hidden h-full flex-col bg-muted p-10 text-white lg:flex dark:border-r">
+            <div className="relative hidden h-screen flex-col bg-muted p-10 text-white lg:flex dark:border-r">
                 <div className="absolute inset-0 bg-zinc-900" />
                 <div className="relative z-20 flex items-center text-lg font-medium">
-                    <Icons.logo className="mr-2 h-6 w-6" />
+                    <Image src="/logo.png" alt="Logo" width={24} height={24} />     
                     Sapphire
                 </div>
-                <div className="relative z-20 mt-auto">
-                    <blockquote className="space-y-2">
-                        <p className="text-lg">
-                            &ldquo;Sapphire has revolutionized how we manage our cultural heritage data with decentralized identifiers.&rdquo;
-                        </p>
-                        <footer className="text-sm">Sofia Chen, Digital Archivist</footer>
-                    </blockquote>
+                
+                {/* DID Visual Representation */}
+                <div className="relative z-20 flex flex-col items-center justify-center h-full my-auto">
+                    <div className="w-48 h-48 relative mb-6">
+                        {/* Outer circle representing the decentralized network */}
+                        <div className="absolute inset-0 rounded-full border-4 border-blue-400 opacity-20 animate-pulse"></div>
+                        
+                        {/* Middle circle representing the DID layer */}
+                        <div className="absolute inset-4 rounded-full border-2 border-blue-300 opacity-40"></div>
+                        
+                        {/* Inner circle with fingerprint representing unique identity */}
+                        <div className="absolute inset-8 rounded-full bg-blue-500/30 flex items-center justify-center">
+                            <Icons.fingerprint className="w-16 h-16 text-blue-200" />
+                        </div>
+                        
+                        {/* Connection nodes with various identity elements */}
+                        <div className="absolute w-8 h-8 bg-blue-900/50 rounded-full flex items-center justify-center top-2 left-1/2 -translate-x-1/2">
+                            <Icons.shield className="w-4 h-4 text-blue-300" />
+                        </div>
+                        
+                        <div className="absolute w-8 h-8 bg-blue-900/50 rounded-full flex items-center justify-center bottom-2 left-1/2 -translate-x-1/2">
+                            <Icons.wallet className="w-4 h-4 text-blue-300" />
+                        </div>
+                        
+                        <div className="absolute w-8 h-8 bg-blue-900/50 rounded-full flex items-center justify-center top-1/2 left-2 -translate-y-1/2">
+                            <Icons.link className="w-4 h-4 text-blue-300" />
+                        </div>
+                        
+                        <div className="absolute w-8 h-8 bg-blue-900/50 rounded-full flex items-center justify-center top-1/2 right-2 -translate-y-1/2">
+                            <Icons.user className="w-4 h-4 text-blue-300" />
+                        </div>
+                        
+                        {/* Connection lines */}
+                        <div className="absolute h-px w-12 bg-blue-400/30 top-6 left-1/2 -translate-x-1/2 rotate-90"></div>
+                        <div className="absolute h-px w-12 bg-blue-400/30 bottom-6 left-1/2 -translate-x-1/2 rotate-90"></div>
+                        <div className="absolute h-px w-12 bg-blue-400/30 top-1/2 left-6 -translate-y-1/2"></div>
+                        <div className="absolute h-px w-12 bg-blue-400/30 top-1/2 right-6 -translate-y-1/2"></div>
+                    </div>
+                    
+                    <h3 className="text-xl font-bold text-blue-300 mb-2">Decentralized Identity</h3>
+                    <p className="text-center text-sm text-blue-100 max-w-xs opacity-80">
+                        Create your DID to take control of your digital identity with security, privacy, and portability across the web.
+                    </p>
                 </div>
             </div>
             <div className="p-8">
@@ -153,11 +190,11 @@ export default function RegisterPage() {
                                     </p>
                                     <p className="text-sm text-muted-foreground">
                                         By continuing, you agree to our{" "}
-                                        <Link href="/terms" className="underline underline-offset-4 hover:text-primary">
+                                        <Link href="/#" className="underline underline-offset-4 hover:text-primary">
                                             Terms of Service
                                         </Link>{" "}
                                         and{" "}
-                                        <Link href="/privacy" className="underline underline-offset-4 hover:text-primary">
+                                        <Link href="/#" className="underline underline-offset-4 hover:text-primary">
                                             Privacy Policy
                                         </Link>
                                     </p>

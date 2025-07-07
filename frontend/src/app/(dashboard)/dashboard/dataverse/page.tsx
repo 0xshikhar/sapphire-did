@@ -258,6 +258,12 @@ function DataverseSearch() {
         description="Search and explore cultural heritage datasets from Harvard Dataverse"
       >
         <div className="flex items-center gap-2">
+          <Button asChild>
+            <Link href="/dashboard/dataverse/upload">
+              <Icons.upload className="mr-2 h-4 w-4" />
+              Upload to Dataverse
+            </Link>
+          </Button>
           <Button asChild variant="outline">
             <Link href="https://dataverse.harvard.edu/" target="_blank" rel="noopener noreferrer">
               <Icons.externalLink className="mr-2 h-4 w-4" />

@@ -43,7 +43,7 @@ export default function GDPRSettingsPage() {
     setIsExporting(true);
     toast.info('Starting data export... This may take a moment.');
     try {
-      const dataBlob = await GDPRService.exportUserData();
+      const dataBlob = await GDPRService.exportUserData('');
       const url = window.URL.createObjectURL(dataBlob);
       const a = document.createElement('a');
       a.href = url;
@@ -70,7 +70,7 @@ export default function GDPRSettingsPage() {
     setIsDeleting(true);
     toast.info('Processing account deletion...');
     try {
-      await GDPRService.deleteAccount();
+      await GDPRService.deleteAccount('');
       toast.success('Account deleted successfully. You will be logged out.');
       // Here you would typically redirect the user to the logout page
       // window.location.href = '/logout';
@@ -86,7 +86,7 @@ export default function GDPRSettingsPage() {
     const fetchStatus = async () => {
       try {
         setIsLoading(true);
-        const status = await GDPRService.getConsentStatus();
+        const status = await GDPRService.getConsentStatus('');
         setConsentStatus(status);
       } catch (error) {
         console.error(error);
@@ -106,7 +106,7 @@ export default function GDPRSettingsPage() {
       // Optimistic UI update
       setConsentStatus(prev => ({ ...prev!, [consentType]: isGranted }));
 
-      await GDPRService.updateConsent(consentType, isGranted);
+      await GDPRService.updateConsent('', consentType, isGranted);
 
       if (isGranted) {
         toast.success(`${consentTypeLabels[consentType].title} consent granted.`);

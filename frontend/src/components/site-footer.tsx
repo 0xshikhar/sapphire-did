@@ -13,14 +13,14 @@ export function SiteFooter({ className }: React.HTMLAttributes<HTMLElement>) {
           <p className="text-center text-sm leading-loose text-muted-foreground md:text-left">
             &copy; {new Date().getFullYear()} Sapphire. All rights reserved.{" "}
             <Link
-              href="/terms"
+              href="/#"
               className="font-medium underline underline-offset-4"
             >
               Terms
             </Link>
             .{" "}
             <Link
-              href="/privacy"
+              href="/#"
               className="font-medium underline underline-offset-4"
             >
               Privacy
@@ -28,16 +28,17 @@ export function SiteFooter({ className }: React.HTMLAttributes<HTMLElement>) {
             .
           </p>
         </div>
-        <p className="text-center text-sm text-muted-foreground md:text-left">
+        <div className="flex flex-row items-center gap-2 text-center text-sm text-muted-foreground md:text-left">
           <Link 
-            href="https://github.com/yourusername/sapphire" 
+            href="https://github.com/0xshikhar/sapphire-did" 
             target="_blank" 
             rel="noreferrer"
-            className="font-medium underline underline-offset-4"
+            className="flex flex-row items-center gap-2 font-medium underline underline-offset-4"
           >
+            <Icons.github className="h-4 w-4" />
             GitHub
           </Link>
-        </p>
+        </div>
       </div>
     </footer>
   )

@@ -226,7 +226,7 @@ export default function GDPRConsentPage() {
         <h2 className="text-xl font-semibold mb-4">Privacy Policy & Terms</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <Link 
-            href="/privacy-policy" 
+            href="/#-policy" 
             className="flex items-center justify-between rounded-lg border p-4 transition-colors hover:bg-muted"
           >
             <div className="flex items-center gap-3">
@@ -242,7 +242,7 @@ export default function GDPRConsentPage() {
           </Link>
           
           <Link 
-            href="/terms" 
+            href="/#" 
             className="flex items-center justify-between rounded-lg border p-4 transition-colors hover:bg-muted"
           >
             <div className="flex items-center gap-3">

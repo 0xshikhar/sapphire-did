@@ -33,6 +33,7 @@ import {
   Share2,
   Search,
   File,
+  Github
 } from "lucide-react"
 
 export type IconKeys = keyof typeof icons
@@ -75,6 +76,7 @@ const icons = {
   search: Search,
   file: File,
   warning: AlertTriangle,
+  github: Github
 }
 
 export const Icons: IconsType = icons
