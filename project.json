@@ -1,0 +1,24 @@
+{
+  "name": "Sapphire",
+  "tagline": "Decentralized Identity System for Cultural Heritage",
+  "description": "Sapphire is a decentralized identity system for cultural heritage data management with Dataverse integration.",
+  "team": [
+    {
+      "name": "0xShikhar",
+      "email": "0xshikhar@gmail.com"
+    }
+  ],
+  "demo_url": "https://sapphire-did.vercel.app",
+  "video_url": "",
+  "technologies": [
+    "Next.js",
+    "React",
+    "TypeScript",
+    "Ethers.js",
+    "Wagmi",
+    "IPFS",
+    "Filecoin",
+    "TailwindCSS",
+    "Shadcn UI"
+  ]
+}
