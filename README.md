@@ -1,14 +1,105 @@
-# Sapphire: Decentralized Identity for Cultural Heritage
+# SapphireDID: Revolutionizing Cultural Heritage Data with DIDs
 
-**A scalable, GDPR-compliant Decentralised Identifier (DID) system for the future of data.**
+**A scalable, GDPR-compliant Decentralised Identifier (DID) system for the future of cultural data.**
 
 ![Sapphire Banner](https://user-images.githubusercontent.com/12345/12345678-abcdef.png)  <!-- Placeholder for a nice banner -->
 
 ## 🌟 Overview
 
-Sapphire is a revolutionary platform that empowers individuals and institutions to manage cultural heritage data with unprecedented security, privacy, and user control. By leveraging Decentralized Identifiers (DIDs) and integrating with the robust Dataverse ecosystem, Sapphire provides a sustainable and user-centric alternative to traditional persistent identifier systems like DOI and Handle.
+An open-source, sustainable, user-centric, and GDPR-compliant approach to cultural data management system using DIDs and agentic models  Our mission is to empower users to have true ownership of their digital identity and metadata, while ensuring full compliance with GDPR.
 
-Our mission is to democratize data, giving users true ownership of their digital identity and metadata, while ensuring full compliance with GDPR.
+## Implementation Status by Component (updated)
+The Sapphire implementation has made significant strides in building a functional DID ecosystem with robust integration with Harvard Dataverse, wallet-based authentication, and AI-powered metadata enhancement capabilities. Most core requirements of the project have been implemented, with some areas still requiring further development.
+
+
+### 1. Core DID Infrastructure (90% Complete)
+
+| Feature | Status | Notes | Code Implementation |
+|---------|--------|-------|---------------------|
+| W3C-compliant DID implementation | ✅ Complete | Fully implements W3C DID standards | [Link](https://github.com/0xshikhar/sapphire-did/tree/master/backend/src/services/did.service.ts) |
+| DID Document Management | ✅ Complete | Create, read, update, deactivate operations implemented | [Link](https://github.com/0xshikhar/sapphire-did/tree/master/backend/src/controllers/did.controller.ts) |
+| DID Resolution Service | ✅ Complete | Functional resolver for DID documents | [Link](https://github.com/0xshikhar/sapphire-did/tree/master/backend/src/services/did.service.ts#resolveDID) |
+| Verification Methods | ✅ Complete | Support for adding/managing verification methods | [Link](https://github.com/0xshikhar/sapphire-did/tree/master/backend/src/controllers/did.controller.ts#verification-methods) |
+| DID Services | ✅ Complete | Full lifecycle management of DID services | [Link](https://github.com/0xshikhar/sapphire-did/tree/master/backend/src/controllers/did.controller.ts#services) |
+| DID History | ✅ Complete | Version tracking for DID documents | [Link](https://github.com/0xshikhar/sapphire-did/tree/master/backend/src/controllers/did.controller.ts#history) |
+| DID Ownership | ✅ Complete | Ownership verification and access control | [Link](https://github.com/0xshikhar/sapphire-did/tree/master/backend/src/services/did.service.ts#verifyDIDOwnership) |
+| Blockchain Integration | ⚠️ Partial | Basic framework exists, but lacks production blockchain deployment | [Link](https://github.com/0xshikhar/sapphire-did/tree/master/backend/src/services/did.service.ts#createDID) |
+
+The DID controller implements a complete set of RESTful APIs following W3C standards, allowing for the creation, management, and resolution of DIDs. The system properly tracks DID document history and implements ownership verification for security. The main gap is in blockchain anchoring - while the system is designed for it - needs lots of improvements.
+
+### 2. Dataverse Integration (90% Complete)
+
+| Feature | Status | Notes | Code Implementation |
+|---------|--------|-------|---------------------|
+| Harvard Dataverse API Integration | ✅ Complete | Using official `@iqss/dataverse-client-javascript` | [Link](https://github.com/0xshikhar/sapphire-did/tree/master/backend/src/services/dataverse.service.ts) |
+| Dataset Search & Discovery | ✅ Complete | Full search functionality with filtering | [Link](https://github.com/0xshikhar/sapphire-did/tree/master/backend/src/controllers/dataverse.controller.ts) |
+| Metadata Mapping | ✅ Complete | Bidirectional mapping between DIDs and Dataverse metadata | [Link](https://github.com/0xshikhar/sapphire-did/tree/master/backend/src/services/dataverse.service.ts#mapMetadata) |
+| Dataset Creation | ✅ Complete | Can create datasets with DID integration | [Link](https://github.com/0xshikhar/sapphire-did/tree/master/backend/src/controllers/dataverse.controller.ts#createDataset) |
+| File Upload | ✅ Complete | File uploads with metadata enhancement | [Link](https://github.com/0xshikhar/sapphire-did/tree/master/backend/src/controllers/dataverse.controller.ts#uploadFile) |
+| Dataset Synchronization | ✅ Complete | Two-way sync between local database and Dataverse | [Link](https://github.com/0xshikhar/sapphire-did/tree/master/backend/src/controllers/dataverse.controller.ts#syncDataset) |
+| DOI Integration | ✅ Complete | Mapping DOIs to DIDs | [Link](https://github.com/0xshikhar/sapphire-did/tree/master/backend/src/services/dataverse.service.ts#mapDOI) |
+| Handle System Integration | ⚠️ Partial | Limited to Harvard Dataverse only | [Link](https://github.com/0xshikhar/sapphire-did/tree/master/backend/src/services/dataverse.service.ts) |
+| Multi-Dataverse Support | ⚠️ Partial | Limited to Harvard Dataverse only | [Link](https://github.com/0xshikhar/sapphire-did/tree/master/backend/src/services/dataverse.service.ts) |
+
+The Dataverse integration is robust and comprehensive, with a complete bidirectional sync system. The project uses the official Dataverse client library and supports dataset creation, file uploads, and metadata synchronization. Current implementation focuses on Harvard Dataverse only.
+
+### 3. GDPR Compliance (90% Complete)
+
+| Feature | Status | Notes | Code Implementation |
+|---------|--------|-------|---------------------|
+| Consent Management | ✅ Complete | Comprehensive tracking of user consent | [Link](https://github.com/0xshikhar/sapphire-did/tree/master/backend/src/controllers/gdpr.controller.ts#consent) |
+| Right to Erasure | ✅ Complete | Full account deletion functionality | [Link](https://github.com/0xshikhar/sapphire-did/tree/master/backend/src/controllers/gdpr.controller.ts#account) |
+| Data Portability | ✅ Complete | Complete user data export feature | [Link](https://github.com/0xshikhar/sapphire-did/tree/master/backend/src/controllers/gdpr.controller.ts#export) |
+| Access Logging | ✅ Complete | Detailed audit trail for all operations | [Link](https://github.com/0xshikhar/sapphire-did/tree/master/backend/src/services/gdpr.service.ts#recordDataAccess) |
+| Data Minimization | ✅ Complete | Proper implementation in database structure | [Link](https://github.com/0xshikhar/sapphire-did/tree/master/backend/src/services/gdpr.service.ts) |
+| Privacy by Design | ✅ Complete | Core principle throughout the architecture | [Link](https://github.com/0xshikhar/sapphire-did/tree/master/backend/src/services/gdpr.service.ts) |
+| Data Protection | ⚠️ Partial | Basic protections, but lacks encryption at rest | [Link](https://github.com/0xshikhar/sapphire-did/tree/master/backend/src/services/gdpr.service.ts#deleteUserData) |
+
+
+### 4. AI-Powered Features (70% Complete)
+
+| Feature | Status | Notes | Code Implementation |
+|---------|--------|-------|---------------------|
+| Metadata Enhancement | ✅ Complete | AI-powered description enrichment | [Link](https://github.com/0xshikhar/sapphire-did/tree/master/backend/src/controllers/ai.controller.ts#enhanceDescription) |
+| Tag Extraction | ✅ Complete | Automated content analysis for tags | [Link](https://github.com/0xshikhar/sapphire-did/tree/master/backend/src/controllers/ai.controller.ts#extractTags) |
+| Cultural Heritage Categories | ✅ Complete | Specialized categorization for cultural data | [Link](https://github.com/0xshikhar/sapphire-did/tree/master/backend/src/controllers/ai.controller.ts#suggestCategories) |
+| File Analysis | ✅ Complete | Comprehensive AI-based file analysis | [Link](https://github.com/0xshikhar/sapphire-did/tree/master/backend/src/controllers/ai.controller.ts#analyzeFile) |
+| Recommendation System | ⚠️ Partial | Basic recommendations implemented | [Link](https://github.com/0xshikhar/sapphire-did/tree/master/backend/src/controllers/recommendation.controller.ts) |
+| Semantic Linking | ❌ Missing | Not implemented yet | N/A |
+| Image Analysis | ⚠️ Partial | Basic framework exists | [Link](https://github.com/0xshikhar/sapphire-did/tree/master/backend/src/services/ai.service.ts#analyzeImage) |
+| Full-text Analysis | ⚠️ Partial | Limited implementation | [Link](https://github.com/0xshikhar/sapphire-did/tree/master/backend/src/services/ai.service.ts#analyzeText) |
+
+The AI service includes key features for enhancing metadata, extracting tags, and suggesting cultural heritage categories. It can analyze uploaded files and provide enhanced descriptions. The recommendation system is partially implemented, but more advanced features like semantic linking and comprehensive image analysis need further development.
+
+### 5. User Authentication & Security (95% Complete)
+
+| Feature | Status | Notes | Code Implementation |
+|---------|--------|-------|---------------------|
+| Wallet-based Authentication | ✅ Complete | SIWE (Sign-In with Ethereum) implemented | [Link](https://github.com/0xshikhar/sapphire-did/tree/master/frontend/src/app/(auth)/login/page.tsx) |
+| Email-based Authentication | ✅ Complete | Using Privy implemented | [Link](https://github.com/0xshikhar/sapphire-did/tree/master/frontend/src/app/(auth)/register/page.tsx) |
+| JWT Authentication | ✅ Complete | Secure token-based session management | [Link](https://github.com/0xshikhar/sapphire-did/tree/master/backend/src/controllers/user.controller.ts) |
+| DID-based Authorization | ✅ Complete | Access control based on DID ownership | [Link](https://github.com/0xshikhar/sapphire-did/tree/master/backend/src/services/did.service.ts#verifyDIDOwnership) |
+| API Security | ⚠️ Partial | Basic security implemented, lacks rate limiting | [Link](https://github.com/0xshikhar/sapphire-did/tree/master/backend/src/app.ts) |
+| Key Management | ⚠️ Partial | Basic key handling, but needs production-ready solution | [Link](https://github.com/0xshikhar/sapphire-did/tree/master/backend/src/services/did.service.ts#createDID) |
+
+JWT tokens are used for session management, and authorization is properly tied to DID ownership. Security enhancements are needed in API protection, key management, and data encryption.
+
+### 6. Technical Architecture (85% Complete)
+
+| Feature | Status | Notes | Code Implementation |
+|---------|--------|-------|---------------------|
+| Full-stack TypeScript | ✅ Complete | Next.js frontend + Express backend | [Link](https://github.com/0xshikhar/sapphire-did/tree/master/frontend) / [Link](https://github.com/0xshikhar/sapphire-did/tree/master/backend) |
+| PostgreSQL Database | ✅ Complete | With Prisma ORM integration | [Link](https://github.com/0xshikhar/sapphire-did/tree/master/backend/src/services/database.service.ts) |
+| RESTful API Design | ✅ Complete | Well-structured endpoints with documentation | [Link](https://github.com/0xshikhar/sapphire-did/tree/master/backend/src/routes) |
+| File Management | ✅ Complete | Secure file upload and storage | [Link](https://github.com/0xshikhar/sapphire-did/tree/master/backend/src/controllers/dataset.controller.ts) |
+| Error Handling | ✅ Complete | Comprehensive error management | [Link](https://github.com/0xshikhar/sapphire-did/tree/master/backend/src/middleware) |
+| Validation | ✅ Complete | Input validation across all endpoints | [Link](https://github.com/0xshikhar/sapphire-did/tree/master/backend/src/controllers) |
+| Logging | ✅ Complete | Detailed logging for operations | [Link](https://github.com/0xshikhar/sapphire-did/tree/master/backend/src/services/gdpr.service.ts#recordDataAccess) |
+| Scalability | ⚠️ Partial | Basic architecture without clustering | [Link](https://github.com/0xshikhar/sapphire-did/tree/master/backend/src/server.ts) |
+| Environment Configuration | ✅ Complete | Proper configuration management | [Link](https://github.com/0xshikhar/sapphire-did/tree/master/backend/src/config) |
+
+We are using a modern TypeScript stack, PostgreSQL database with Prisma ORM, and well-designed RESTful APIs. The system includes proper error handling, validation, and logging. Scalability features like clustering and load balancing would be needed for production deployment.
+
 
 ## 🧩 The Challenge
 
@@ -68,7 +159,7 @@ Sapphire's architecture is designed for scalability, security, and interoperabil
 ### Prerequisites
 
 *   Node.js (v18+)
-*   Yarn or npm
+*   Bun or npm
 *   PostgreSQL database
 *   A Web3 wallet (e.g., MetaMask)
 
@@ -76,7 +167,7 @@ Sapphire's architecture is designed for scalability, security, and interoperabil
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/your-repo/sapphire.git
+    git clone https://github.com/0xshikhar/sapphire.git
     cd sapphire
     ```
 
