@@ -1,16 +1,9 @@
 # SapphireDID: Revolutionizing Cultural Heritage Data with DIDs
 
 **A scalable, GDPR-compliant Decentralised Identifier (DID) system for the future of cultural data.**
-
-![Sapphire Banner](https://user-images.githubusercontent.com/12345/12345678-abcdef.png)  <!-- Placeholder for a nice banner -->
-
-## 🌟 Overview
-
-An open-source, sustainable, user-centric, and GDPR-compliant approach to cultural data management system using DIDs and agentic models  Our mission is to empower users to have true ownership of their digital identity and metadata, while ensuring full compliance with GDPR.
+An open-source, sustainable, user-centric, and GDPR-compliant approach to cultural data management system using DIDs and agentic models  
 
 ## Implementation Status by Component (updated)
-The Sapphire implementation has made significant strides in building a functional DID ecosystem with robust integration with Harvard Dataverse, wallet-based authentication, and AI-powered metadata enhancement capabilities. Most core requirements of the project have been implemented, with some areas still requiring further development.
-
 
 ### 1. Core DID Infrastructure (90% Complete)
 
@@ -99,6 +92,9 @@ JWT tokens are used for session management, and authorization is properly tied t
 | Environment Configuration | ✅ Complete | Proper configuration management | [Link](https://github.com/0xshikhar/sapphire-did/tree/master/backend/src/config) |
 
 We are using a modern TypeScript stack, PostgreSQL database with Prisma ORM, and well-designed RESTful APIs. The system includes proper error handling, validation, and logging. Scalability features like clustering and load balancing would be needed for production deployment.
+
+
+**The Sapphire implementation has made significant strides in building a functional DID ecosystem with robust integration with Harvard Dataverse, wallet-based authentication, and AI-powered metadata enhancement capabilities. Most core requirements of the project have been implemented, with some areas still requiring further development.**
 
 
 ## 🧩 The Challenge
@@ -198,8 +194,10 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## 🤝 Contributing
 
+Our mission is to empower users to have true ownership of their digital identity and metadata, while ensuring full compliance with GDPR.
+
 We welcome contributions from the community! Please read our contributing guidelines before submitting a pull request.
 
 ---
 
-**Sapphire** - *Reclaiming our digital heritage, one identifier at a time.*
+**SapphireDID** - *Reclaiming our digital heritage, one identifier at a time.*
